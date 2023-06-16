@@ -42,12 +42,14 @@ MAP KEYS TERMINATED BY '#'
 LINES TERMINATED BY '\n';
 LOAD DATA LOCAL INPATH 'data1.csv' INTO TABLE tbl1;
 
-DROP TABLE IF EXISTS DATOS;
-create table DATOS as 
-select c2, unal.key, unal.value  from tbl0
-lateral view explode(c6) unal As key, value;
+/*
+    >>> Escriba su respuesta a partir de este punto <<<
+*/
 
-INSERT OVERWRITE DIRECTORY 'output/'
+CREATE TABLE valor_unico AS SELECT c2, c1 FROM tbl0;
+
+INSERT OVERWRITE LOCAL DIRECTORY './output'
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-select c2, SUM(value) from DATOS
-GROUP BY c2;
+COLLECTION ITEMS TERMINATED BY ':'
+
+SELECT c2, collect_set(c1) FROM valor_unico GROUP BY c2;
